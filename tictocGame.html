@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe Game</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(1, 151, 119);
+        }
+
+        #game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: cadetblue;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            text-align: center;
+            line-height: 100px;
+            border: 2px solid #61dafb;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #fff;
+            color: #61dafb;
+            transition: background-color 0.3s ease;
+        }
+
+        .cell:hover {
+            background-color: #f0f8ff;
+        }
+
+        #score-board {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        #result {
+            font-size: 24px;
+            margin-top: 10px;
+            color: #61dafb;
+        }
+
+        button {
+            font-size: 18px;
+            padding: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            background-color: #61dafb;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #47a7f5;
+        }
+
+        #footer {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <h1>Tic Tac Toe Game</h1>
+        <div id="game-board"></div>
+        <div id="score-board"></div>
+        <div id="result"></div>
+        <button onclick="resetGame()">New Game</button>
+    </div>
+
+    <div id="footer">
+        <p>Designed by Muhammad Ahmed Arain</p>
+    </div>
+
+    <script>
+        const board = document.getElementById('game-board');
+        const cells = [];
+        let currentPlayer = 'X';
+        let gameActive = true;
+        let moves = 0;
+        let scores = { X: 0, O: 0 };
+
+        function createGameBoard() {
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 3; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    cell.addEventListener('click', handleCellClick);
+                    cells.push(cell);
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick() {
+            if (!gameActive || this.textContent !== '') return;
+
+            this.textContent = currentPlayer;
+            moves++;
+
+            if (checkWinner()) {
+                scores[currentPlayer]++;
+                updateScoreBoard();
+                displayResult(`${currentPlayer} wins!`);
+                gameActive = false;
+            } else if (moves === 9) {
+                displayResult('It\'s a tie!');
+                gameActive = false;
+            } else {
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            }
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6]             // Diagonals
+            ];
+
+            return winningCombinations.some(combination =>
+                combination.every(index => cells[index].textContent === currentPlayer)
+            );
+        }
+
+        function displayResult(message) {
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = message;
+        }
+
+        function updateScoreBoard() {
+            const scoreBoard = document.getElementById('score-board');
+            scoreBoard.textContent = `Score - X: ${scores.X} | O: ${scores.O}`;
+        }
+
+        function resetGame() {
+            cells.forEach(cell => {
+                cell.textContent = '';
+            });
+
+            currentPlayer = 'X';
+            gameActive = true;
+            moves = 0;
+
+            const resultElement = document.getElementById('result');
+            resultElement.textContent = '';
+
+            createGameBoard();
+        }
+
+        createGameBoard();
+    </script>
+
+</body>
+</html>
